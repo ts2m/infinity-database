@@ -1,0 +1,45 @@
+# 你可以修改/重排 steps 顺序；Pipeline 会按依赖（上一步产物）自动连接
+workdir: "./workdir"        # 产物与日志目录
+steps:
+  - op: IngestFiles         # 输入1：散表（CSV/Excel/JSON/Parquet）
+    params:
+      input_globs: ["./input/tables/**/*.csv", "./input/tables/**/*.xlsx"]
+      dataset_id: "dataset_from_files"
+  - op: IngestDB            # 输入2：成库（SQLite/MySQL等）——可选
+    params:
+      uri: "sqlite:///./input/raw.db"
+      dataset_id: "dataset_from_db"
+  - op: Deduplicate
+  - op: EmbedTables
+    params:
+      provider: "qianfan"   # 或 "dummy"
+      model: "tao-8k"
+      parallelism: 16
+  - op: AdaptiveCluster
+    params:
+      initial_k: 50
+      max_cluster_size: 20
+      incremental_centroids_uri: "./workdir/centroids.json"  # 支持增量
+  - op: ConsolidateSchema
+    params:
+      provider: "llm_http"  # 使用 LLM 产出合并后的逻辑 schema
+      prompt_template_path: "./prompts/ppt_cluster.txt"
+  - op: CompileDDL
+  - op: BuildSQLite
+  - op: AugmentWithLLM
+    params:
+      provider: "llm_http"
+      init_prompt_path: "./prompts/ppt_initial.txt"
+      react_prompt_path: "./prompts/ppt_react.txt"
+      table_react_prompt_path: "./prompts/ppt_table_react.txt"
+      max_iterations: 20
+  - op: QualityCheck
+    params:
+      rules:
+        - module: "dataflow.qc_rules.basic.RowCountRule"
+          params: { min_records_per_table: 20 }
+        - module: "dataflow.qc_rules.basic.NullRateRule"
+          params: { max_null_rate: 0.5 }
+        - module: "dataflow.qc_rules.basic.ForeignKeyRule"
+        - module: "dataflow.qc_rules.semantic.ZipCodeRule"   # 你自定义的语义规则示例
+          params: { column: "Zip", country: "US" }

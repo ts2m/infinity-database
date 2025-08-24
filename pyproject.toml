@@ -1,0 +1,39 @@
+[tool.poetry]
+name = "infinity-database"
+version = "0.1.0"
+description = "A data processing pipeline framework"
+authors = ["Your Name <your.email@example.com>"]
+
+[tool.poetry.dependencies]
+python = "^3.9"
+
+[tool.poetry.dev-dependencies]
+pytest = "^6.2"
+black = "^22.3"
+
+[build-system]
+requires = ["setuptools>=68", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "dataflow"
+version = "0.1.0"
+description = "Operator-style data pipeline for table/db normalization, clustering, schema consolidation, SQLite build, LLM augmentation, and QC."
+authors = [{name = "you"}]
+requires-python = ">=3.9"
+dependencies = [
+  "pydantic>=2.6",
+  "tqdm>=4.66",
+  "numpy>=1.24",
+  "pandas>=2.1",
+  "scikit-learn>=1.3",
+  "matplotlib>=3.8",
+  "sqlalchemy>=2.0",
+  "python-slugify>=8.0",
+  "xxhash>=3.4",
+  "pyyaml>=6.0",
+  "requests>=2.32"
+]
+
+[tool.setuptools.packages.find]
+where = ["src"]
