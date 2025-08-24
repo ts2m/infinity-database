@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 # Infinity Database
 
 A data processing pipeline framework for managing complex data workflows using an operator-style paradigm.
@@ -88,3 +89,6 @@ infinity_database/
 ## Customization
 
 To add custom operators (e.g., for normalization or semantic recognition), create a new operator class inheriting from `Operator`, define input and output kinds, and insert it into the pipeline configuration at the desired step.
+=======
+# infinity-database
+>>>>>>> 2424290466c1eb6b1f2cad58feee40860a17b1f7
